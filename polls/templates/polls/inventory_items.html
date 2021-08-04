@@ -1,0 +1,27 @@
+{% extends 'polls/base.html' %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">HOSTNAME</th>
+                <th scope="col">USERNAME</th>
+                <th scope="col">PASSWORD</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in formset %}
+            <tr>
+                <td>{{ item.hostname }}</td>
+                <td>{{ item.username }}</td>
+                <td>{{ item.password }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}

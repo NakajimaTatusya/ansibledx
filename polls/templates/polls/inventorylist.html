@@ -1,0 +1,135 @@
+{% extends 'polls/base.html' %}
+
+{% block content %}
+
+<!-- Start Breadcrumb -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb" id="breadcrumblist">
+        <li class="breadcrumb-item"><a title="to HomePage" href="{% url 'polls:index' %}"><i class="fa fa-home">HOME</i></a></li>
+        <li class="breadcrumb-item active" aria-current="page">基本設定</li>
+    </ol>
+</nav>
+<!-- End Breadcrumb -->
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="card text-center" style="width: 64rem;margin: 0 auto;">
+        <div class="card-header">新規作成</div>
+        <div class="card-body">
+            {% for field in inventory_form %}
+            {{ field.label }}：{{ field }}
+            {% endfor %}
+        </div>
+        <div class="card-footer text-muted">
+            <div class="container">
+                <div class="row">
+                    <div class="col" style="text-align: right;"><input class="btn btn-outline-info btn-sm" type="reset" id="srclear" name="srclear" value="クリア"></div>
+                    <div class="col" style="text-align: right;"><input class="btn btn-primary btn-sm" type="submit" id="addnew" name="addnew" value="登録"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<nav aria-label="paging inventory inforamtion list">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+        {% for i in page_obj.paginator.page_range %}
+        {% if page_obj.number == i %}
+        <li class="page-item active"><span class="page-link">{{ i }}</span><span class="sr-only">(current)</span></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</nav>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-row align-items-left">
+                        <input class="btn btn-success btn-sm" type="submit" id="deleteitems" name="deleteitems" value="削除" />
+                        <input type="hidden" name="deletejson" id="deletejson" value="" />
+                    </div>
+                </form>
+            </th>
+            <th scope="col">ホスト名</th>
+            <th scope="col">ユーザー名</th>
+            <th scope="col">パスワード</th>
+            <th scope="col">更新</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for inventory in inventory_list %}
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class="form-check-input position-static" type="checkbox" id="chkdel" name="chkdel" value="{{ forloop.counter }}" />
+                </div>
+            </td>
+            <td>{{ inventory.hostname }}</td>
+            <td>{{ inventory.username }}</td>
+            <td>{{ inventory.password }}</td>
+            <td>
+                <button id="edit_button" type="button" class="btn btn-warning btn-sm" value="{{ forloop.counter }}">編集</button>
+                <input type="hidden" id="hostname_{{ forloop.counter }}" name="hostname_{{ forloop.counter }}" value="{{ inventory.hostname }}" />
+                <input type="hidden" id="username_{{ forloop.counter }}" name="username_{{ forloop.counter }}" value="{{ inventory.username }}" />
+                <input type="hidden" id="password_{{ forloop.counter }}" name="password_{{ forloop.counter }}" value="{{ inventory.password }}" />
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    $('#srclear').on('click', function() {
+        $('#id_host_name').attr('value', '');
+        $('#id_user_name').attr('value', '');
+        $('#id_pass_word').attr('value', '');
+    });
+    $("#edit_button").on("click", function() {
+        var indexNo = $(this).val();
+        var hostname = $('#hostname_' + indexNo).val();
+        var username = $('#username_' + indexNo).val();
+        var password = $('#password_' + indexNo).val();
+        $('#id_host_name').attr('value', hostname);
+        $('#id_user_name').attr('value', username);
+        $('#id_pass_word').attr('value', password);
+    });
+    $('input[name="chkdel"]').change(function() {
+        hiddenJson = $('#deletejson').val();
+        var jsonobj = [];
+        if (hiddenJson != '') {
+            jsonobj = JSON.parse(hiddenJson);
+        }
+        var indexNo = '';
+        var hostname = '';
+        var username = '';
+        var password = '';
+        if ($(this).prop('checked')) {
+            var indexNo = $(this).val();
+            var hostname = $('#hostname_' + indexNo).val();
+            jsonobj.push({id: indexNo, host_name: hostname});
+            $('#deletejson').prop("value", JSON.stringify(jsonobj));
+            console.log(jsonobj);
+        }
+        else {
+            var indexNo = $(this).val();
+            jsonobj.some(function(v, i) {
+                if (v.id == indexNo) jsonobj.splice(i, 1);
+            });
+            $('#deletejson').prop("value", JSON.stringify(jsonobj));
+        }
+    });
+</script>
+{% endblock %}

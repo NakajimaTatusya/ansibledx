@@ -1,0 +1,66 @@
+{% extends 'polls/base.html' %}
+
+{% block content %}
+<h1>Kitting automation for Windows 10 Client.</h1>
+<div class="row">
+    <div class="col-sm-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">キッティングPCの接続情報を設定</h5>
+                <p class="card-text">ホスト名、ユーザー名、パスワードを設定</p>
+                <a href="{% url 'polls:InventoryList' %}" class="btn btn-primary btn-block">ターゲット情報設定</a>
+                <a href="{% url 'polls:InventoryUpload' %}" class="btn btn-primary btn-block">ターゲットCSVをアップロード</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">疎通確認</h5>
+                <p class="card-text">対象のPCへの疎通確認を実行</p>
+                <a href="{% url 'polls:ansible_confirm' %}" class="btn btn-primary btn-block">疎通確認</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">結果ログの確認</h5>
+                <p class="card-text">AnsibleのPlaybook標準出力ログを確認</p>
+                <a href="{% url 'polls:ListAnsibleLogs' %}" class="btn btn-primary btn-block">ログ一覧を表示</a>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="mx-auto" style="width: 700px;">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">STEP1:Windows Power Management</h5>
+            <p class="card-text">電源（ＡＣ／ＤＣ）管理を、ディスプレイ消灯0分、ディスク電源断0分に設定</p>
+            <a href="{% url 'polls:ansible_powermng_zero' %}" class="btn btn-primary btn-block">電源管理設定を無効</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">STEP2:Windows Update</h5>
+            <p class="card-text">Windowsアップデートを実行（20H1のような機能アップデートは未対応）</p>
+            <a href="{% url 'polls:ansible_winUpdate' %}" class="btn btn-primary btn-block">Windows Update</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">STEP3:Windows 基本設定開始</h5>
+            <p class="card-text">Windows10クライアントPCの基本設定を実行</p>
+            <a href="{% url 'polls:ansible_basic' %}" class="btn btn-primary btn-block">基本設定</a>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">STEP4:Windows Power Management</h5>
+            <p class="card-text">電源（ＡＣ／ＤＣ）管理をディスプレイ消灯10分、ディスク電源断30分に設定</p>
+            <a href="{% url 'polls:ansible_powermng' %}" class="btn btn-primary btn-block">電源管理設定</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

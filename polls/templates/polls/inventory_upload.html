@@ -1,0 +1,104 @@
+{% extends 'polls/base.html' %}
+
+{% block content %}
+<!-- Start Breadcrumb -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb" id="breadcrumblist">
+        <li class="breadcrumb-item"><a title="to HomePage" href="{% url 'polls:index' %}"><i class="fa fa-home">HOME</i></a></li>
+        <li class="breadcrumb-item active" aria-current="page">CSVアップロード</li>
+    </ol>
+</nav>
+<!-- End Breadcrumb -->
+
+<!-- {% for field, errors in form.errors.items %}
+{% for error in errors %}
+<div class="alert alert-primary" role="alert">{{ error }}</div>
+{% endfor %}
+{% endfor %} -->
+
+<!-- {{ form.non_field_errors }}
+{% for field in form %}
+   {{ field }}
+   {{ field.errors }}
+   <hr>
+{% endfor %} -->
+
+{% if form.errors %}
+  <div class="alert alert-warning">
+       {% for errors in form.errors.values %}
+          {% for error in errors %}
+          {{ error }}<br>
+         {% endfor %}
+       {% endfor %}
+  </div>
+{% endif %}
+
+<!-- {% for field in form %}
+  <div class="alert alert-primary">
+      {{ field.label_tag }}
+      {{ field }}
+      {% if field.help_text %}
+         <span class="helptext">{{ field.help_text }}</span>
+      {% endif %}
+ </div>
+{% endfor %} -->
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="card text-center" style="width: 32rem;margin: 0 auto;">
+        <div class="card-header">
+            <p>キッティングを行うクライアントPCの情報を記載したCSVファイルをアップロードします。</p>
+            <a href="{% url 'polls:PostExportCsv' %}" class="btn btn-primary btn-block">現在のInventoryリストをダウンロード</a>
+        </div>
+        <div class="card-body">
+            {{ form.target_list }}
+        </div>
+        <div class="card-footer text-muted">
+            <div class="col-auto"><input class="btn btn-primary btn-sm" type="submit" id="upload" name="upload" value="登録"></div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    // $(function() {
+    //     // HTMLコンテンツエリアそのものへドラッグ＆ドロップ禁止
+    //     $('html').on('dragover', function(e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //     });
+    //     $('html').on('drop', function(e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //     });
+    // });
+    // $(function() {
+    //     // drop area へ
+    //     $('div.card-header').on('dragover', function(e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         let p = ($this).find('p');
+    //         $(p).text("ここにドロップ");
+    //     });
+    //     $('div.card-header').on('dragleave', function(e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         let p = ($this).find('p');
+    //         $(p).text("ここにファイルをドラッグ＆ドロップするか、クリックしてファイルを選択");
+    //     });
+    //     $('div.card-header').on('drop', function(e) {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         let file = e.originalEvent.dataTransfer.files[0];
+    //         alert(file);
+    //         let elminput = $(this).parent().find('input');
+    //         $(elminput).val(file);
+    //     });
+    //     $('div.card-header').on('click', function(e){
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         let elminput = $(this).parent().find('input');
+    //         $(elminput).click();
+    //     });
+    // });
+</script>
+{% endblock %}

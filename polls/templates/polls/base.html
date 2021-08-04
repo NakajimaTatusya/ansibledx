@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <title>社内DX実践インフラセットアップ業務の自動化</title>
+    <!-- BootstrapのCSS読み込み -->
+    <link href="{% static 'polls/css/bootstrap.min.css' %}" type="text/css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="{% static 'polls/js/jquery-3.3.1.min.js' %}"></script>
+    <!-- BootstrapのJS読み込み -->
+    <script src="{% static 'polls/js/bootstrap.min.js' %}"></script>
+    
+    <!-- パンくずリストの表示を整える。 -->
+    <!-- Arrange the display of the breadcrumbs. -->
+    <style>
+        .breadcrumb{
+            background-color: white;
+        }
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: ">";
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <!-- Bootstrapを使用するためのscriptタグ設置 -->
+    <!-- script tags to use Bootstrap. -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
+</body>
+
+</html>
