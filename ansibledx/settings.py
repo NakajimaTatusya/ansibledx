@@ -91,7 +91,7 @@ DATABASES = {
     #     'NAME': 'ansibledx',
     #     'USER': 'postgres',
     #     'PASSWORD': 'KainoKuni500thAnniv',
-    #     # 'HOST': 'db', for container
+    #     # 'HOST': 'dx_pgsql13', for container
     #     'HOST': 'localhost',
     #     'PORT': 5432,
     # }
