@@ -155,6 +155,7 @@ def CommandPing():
         for line in p.stdout:
             yield line
             yield "<br>\n"
+            yield " " * 1024
 
 
 def CommandWinPowermngZero():
@@ -164,6 +165,7 @@ def CommandWinPowermngZero():
         for line in p.stdout:
             yield line
             yield "<br>\n"
+            yield " " * 1024
 
 
 def CommandWinUpdate():
@@ -173,6 +175,7 @@ def CommandWinUpdate():
         for line in p.stdout:
             yield line
             yield "<br>\n"
+            yield " " * 1024
 
 
 def CommandWinBasic():
@@ -182,6 +185,7 @@ def CommandWinBasic():
         for line in p.stdout:
             yield line
             yield "<br>\n"
+            yield " " * 1024
 
 
 def CommandWinPowermng():
@@ -191,6 +195,7 @@ def CommandWinPowermng():
         for line in p.stdout:
             yield line
             yield "<br>\n"
+            yield " " * 1024
 
 
 log_analysis_path: str = '/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/log_decomposition.py'
@@ -204,6 +209,7 @@ def CommandAnsilePlayLogAnalysis():
         for line in p.stdout:
             yield line
             yield "<br>\n"
+            yield " " * 1024
 
 
 def InventoryUpload(request):

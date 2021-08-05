@@ -30,7 +30,7 @@
 
                             if (textData.length > resTextLength) {
                                 newTextData.split("\n").forEach(function (element) {
-                                    $("#output_result").html($("#output_result").html() + element);
+                                    $("#output_result").html($("#output_result").html() + element.trim());
                                     resTextLength = textData.length;
                                     var obj = document.getElementById('output_result');
                                     obj.scrollTop = obj.scrollHeight;
