@@ -4,6 +4,7 @@ import io
 import json
 import urllib
 
+from pathlib import Path
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 from django.http import HttpResponseRedirect, HttpResponse
 from django.http import StreamingHttpResponse
@@ -252,8 +253,9 @@ def PostExportCsv(request):
 
 
 def ListAnsibleLogs(request):
-    path = "/home/ceansible/ansibledx/static/polls/ansible_playlogs/"
-    log_list = os.listdir(path)
+    dirpath = "/home/ceansible/ansibledx/static/polls/ansible_playlogs/"
+    wk_list = sorted(Path(dirpath).iterdir(), key=os.path.getmtime, reverse=True)
+    log_list = list(map(lambda x: os.path.basename(x), wk_list))
     return render(request, 'polls/ansible_playbook_log_list.html', {'logs': log_list})
 
 
