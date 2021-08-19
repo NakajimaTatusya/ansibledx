@@ -1,4 +1,5 @@
 import logging
+import socket
 
 from .models import Inventory
 
@@ -36,7 +37,13 @@ def write_into_csv(csv_data):
     icnt = 1
     Inventory.objects.all().delete()
     for row in csv_data:
-        new_row = Inventory(hostname=row['hostname'], username=row['username'], password=row['password'], order_no=icnt)
+        _ipaddress = ""
+        try:
+            _ipaddress = socket.gethostbyname(row['hostname'])
+        except:
+            _ipaddress = row['hostname']
+            logging.exception("get host by %s error." % row['hostname'])
+        new_row = Inventory(hostname=row['hostname'], ipaddress=_ipaddress, username=row['username'], password=row['password'], order_no=icnt)
         new_row.save()
         icnt += 1
 

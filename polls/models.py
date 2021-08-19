@@ -25,6 +25,8 @@ class Choice(models.Model):
 class Inventory(models.Model):
     # hostname
     hostname = models.CharField(primary_key=True, max_length=15)
+    # ipaddress
+    ipaddress = models.CharField(max_length=15, null=True)
     # WinRM接続用ユーザー名
     username = models.CharField(max_length=256, null=True)
     # パスワード

@@ -300,7 +300,13 @@ class InventoryList(ListView):
             new_order_no = Inventory.objects.all().aggregate(Max('order_no'))
             if new_order_no:
                 new_order_no = 1
-            new_row = Inventory(hostname=form_inventory_value[0], username=form_inventory_value[1], password=form_inventory_value[2], order_no=new_order_no)
+            _ipaddress = ""
+            try:
+                _ipaddress = socket.gethostbyname(form_inventory_value[0])
+            except:
+                _ipaddress = form_inventory_value[0]
+                logging.exception("get host by %s error." % form_inventory_value[0])
+            new_row = Inventory(hostname=form_inventory_value[0], ipaddress=_ipaddress, username=form_inventory_value[1], password=form_inventory_value[2], order_no=new_order_no)
             new_row.save()
 
         # output ansible inventory file
