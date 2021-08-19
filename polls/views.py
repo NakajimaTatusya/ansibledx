@@ -2,7 +2,9 @@ import csv
 import os
 import io
 import json
+import logging
 import urllib
+import socket
 
 from pathlib import Path
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
@@ -51,11 +53,19 @@ def OutputInventoryFile():
 
     rows = Inventory.objects.all()
     for row in rows:
+        # get ip address from hostname
+        ipaddrss = ""
+        try:
+            ipaddrss = socket.gethostbyname(row.hostname)
+        except:
+            ipaddrss = row.hostname
+            logging.exception("get host by %s error." % row.hostname)
+
         # hosts.yml ファイル用
-        const_hosts += "          %s:\n" % row.hostname
+        const_hosts += "          %s:\n" % ipaddrss
 
         # host_varsファイル出力
-        with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.hostname, 'w') as fhv:
+        with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % ipaddrss, 'w') as fhv:
           fhv.write(const_vars % (row.username, row.password))
     const_hosts += "..."
 
@@ -93,7 +103,7 @@ def vote(request, question_id):
     except (KeyError, Choice.DoseNotExist):
         return render(request, 'polls/detail.html', {
             'question': question,
-            'error_message': '選択されていませんで',
+            'error_message': '選択されていません',
         })
     else:
         selected_choice.votes += 1

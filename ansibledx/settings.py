@@ -29,7 +29,7 @@ except ImportError:
     pass
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.201', '[::1]']
 
@@ -149,15 +149,17 @@ if DEBUG:
     logging.basicConfig(
         level = logging.DEBUG,
         format = '%(asctime)s %(levelname)s %(message)s',
+        filename = './debug_log_file.log',
+        filemode = 'a'
     )
 else:
     # will output to logging file
     logging.basicConfig(
-        level = logging.DEBUG,
+        level = logging.INFO,
         format = '%(asctime)s %(levelname)s %(message)s',
-        filename = '/my_log_file.log',
+        filename = './ansibledx_log_file.log',
         filemode = 'a'
-    )
+)
 
 # nginx settings
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
