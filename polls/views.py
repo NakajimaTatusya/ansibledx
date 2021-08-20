@@ -54,19 +54,11 @@ def OutputInventoryFile():
 
     rows = Inventory.objects.all()
     for row in rows:
-        # get ip address from hostname
-        ipaddrss = ""
-        try:
-            ipaddrss = socket.gethostbyname(row.hostname)
-        except:
-            ipaddrss = row.hostname
-            logging.exception("get host by %s error." % row.hostname)
-
         # hosts.yml ファイル用
-        const_hosts += "          %s:\n" % ipaddrss
+        const_hosts += "          %s:\n" % row.ipaddress
 
         # host_varsファイル出力
-        with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % ipaddrss, 'w') as fhv:
+        with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.ipaddress, 'w') as fhv:
           fhv.write(const_vars % (row.username, row.password))
     const_hosts += "..."
 
@@ -256,9 +248,9 @@ def PostExportCsv(request):
     strio = io.StringIO()
     writer = csv.writer(strio)
 
-    writer.writerow(['HOSTNAME', 'USERNAME', 'PASSWORD'])
-    for row in Inventory.objects.all():
-        writer.writerow([row.hostname, row.username, row.password])
+    writer.writerow(['ORDERNO', 'HOSTNAME', 'USERNAME', 'PASSWORD'])
+    for row in Inventory.objects.order_by('order_no').all():
+        writer.writerow([row.order_no, row.hostname, row.username, row.password])
     response.write(strio.getvalue().encode('utf_8'))
     return response
 

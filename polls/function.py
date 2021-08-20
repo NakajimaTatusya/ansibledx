@@ -1,3 +1,4 @@
+import concurrent.futures
 import logging
 import socket
 
@@ -21,30 +22,48 @@ def process_files(inventoryfile):
             if line:
                 fields = line.split(",")
                 tmp = {
-                    'hostname': fields[0],
-                    'username': fields[1],
-                    'password': fields[2]
+                    'orderno': fields[0],
+                    'hostname': fields[1],
+                    'username': fields[2],
+                    'password': fields[3]
                 }
                 dict.append(tmp.copy())
 
     return dict
 
 
+def get_ipaddreess_from_hostname(prow: dict) -> str:
+    """
+    CSVファイルから読み込んだホスト名を使用して、IPv4アドレスを取得する
+    """
+    _ipaddress = ""
+    try:
+        _ipaddress = socket.gethostbyname(prow["hostname"])
+    except:
+        _ipaddress = prow["hostname"]
+        logging.exception("get host by %s error." % prow["hostname"])
+    return _ipaddress
+
+
 def write_into_csv(csv_data):
     """
-    SQLite3のテーブルへDELETE、INSERTします
+    SQLite3のpolls_inventoryテーブルへDELETE、INSERTします
     """
-    icnt = 1
+    # 全部策徐
     Inventory.objects.all().delete()
-    for row in csv_data:
-        _ipaddress = ""
-        try:
-            _ipaddress = socket.gethostbyname(row['hostname'])
-        except:
-            _ipaddress = row['hostname']
-            logging.exception("get host by %s error." % row['hostname'])
-        new_row = Inventory(hostname=row['hostname'], ipaddress=_ipaddress, username=row['username'], password=row['password'], order_no=icnt)
-        new_row.save()
-        icnt += 1
+
+    # 並列処理
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        for hdict, _ipaddress in zip(csv_data, executor.map(get_ipaddreess_from_hostname, csv_data)):    
+            new_row = Inventory(hostname=hdict['hostname'], ipaddress=_ipaddress, username=hdict['username'], password=hdict['password'], order_no=hdict['orderno'])
+            new_row.save()
+
+    # for row in csv_data:
+    #     _ipaddress = ""
+    #     try:
+    #         _ipaddress = socket.gethostbyname(row['hostname'])
+    #     except:
+    #         _ipaddress = row['hostname']
+    #         logging.exception("get host by %s error." % row['hostname'])
 
     return 'polls:InventoryList'
