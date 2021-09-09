@@ -157,9 +157,7 @@ def CommandPing():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield line
-            yield "<br>\n"
-            yield " " * 1024
+            yield "{}<br>\n".format(line)
 
 
 def CommandWinPowermngZero():
@@ -167,9 +165,7 @@ def CommandWinPowermngZero():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield line
-            yield "<br>\n"
-            yield " " * 1024
+            yield "{}<br>\n".format(line)
 
 
 def CommandWinUpdate():
@@ -177,9 +173,7 @@ def CommandWinUpdate():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield line
-            yield "<br>\n"
-            yield " " * 1024
+            yield "{}<br>\n".format(line)
 
 
 def CommandWinBasic():
@@ -187,9 +181,7 @@ def CommandWinBasic():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield line
-            yield "<br>\n"
-            yield " " * 1024
+            yield "{}<br>\n".format(line)
 
 
 def CommandWinPowermng():
@@ -197,9 +189,7 @@ def CommandWinPowermng():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield line
-            yield "<br>\n"
-            yield " " * 1024
+            yield "{}<br>\n".format(line)
 
 
 log_analysis_path: str = '/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/log_decomposition.py'
@@ -211,9 +201,7 @@ def CommandAnsilePlayLogAnalysis():
                 cwd=log_analysis_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield line
-            yield "<br>\n"
-            yield " " * 1024
+            yield "{}<br>\n".format(line)
 
 
 def InventoryUpload(request):
