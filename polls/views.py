@@ -6,6 +6,7 @@ import logging
 import re
 import urllib
 import socket
+import time
 
 from pathlib import Path
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
@@ -157,7 +158,8 @@ def CommandPing():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield "{}<br>\n".format(line)
+            time.sleep(0.1)
+            yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinPowermngZero():
@@ -165,7 +167,8 @@ def CommandWinPowermngZero():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield "{}<br>\n".format(line)
+            time.sleep(0.1)
+            yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinUpdate():
@@ -173,7 +176,8 @@ def CommandWinUpdate():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield "{}<br>\n".format(line)
+            time.sleep(0.1)
+            yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinBasic():
@@ -181,7 +185,8 @@ def CommandWinBasic():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield "{}<br>\n".format(line)
+            time.sleep(0.1)
+            yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinPowermng():
@@ -189,7 +194,8 @@ def CommandWinPowermng():
                 cwd=script_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield "{}<br>\n".format(line)
+            time.sleep(0.1)
+            yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 log_analysis_path: str = '/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/log_decomposition.py'
@@ -201,7 +207,8 @@ def CommandAnsilePlayLogAnalysis():
                 cwd=log_analysis_current_dir, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            yield "{}<br>\n".format(line)
+            time.sleep(0.1)
+            yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def InventoryUpload(request):
