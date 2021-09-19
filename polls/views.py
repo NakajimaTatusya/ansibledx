@@ -22,6 +22,9 @@ from django.db.models import Max
 from polls.function import process_files, write_into_csv
 
 
+# disable:0 enable:1
+FLAG_NETBIOS = 1
+
 def ClearInventoryFiles():
     """
     ansible host vars 変数ファイルをすべて削除する
@@ -55,13 +58,19 @@ def OutputInventoryFile():
 
     rows = Inventory.objects.all()
     for row in rows:
-        # hosts.yml ファイル用
-        const_hosts += "          %s:\n" % row.ipaddress
-
-        # host_varsファイル出力
-        with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.ipaddress, 'w') as fhv:
-          fhv.write(const_vars % (row.username, row.password))
-    const_hosts += "..."
+        if FLAG_NETBIOS == 0:
+            # hosts.yml ファイル用
+            const_hosts += "          %s:\n" % row.ipaddress
+            # host_varsファイル出力
+            with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.ipaddress, 'w') as fhv:
+                fhv.write(const_vars % (row.username, row.password))
+        else:
+            # hosts.yml ファイル用
+            const_hosts += "          %s:\n" % row.hostname
+            # host_varsファイル出力
+            with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.hostname, 'w') as fhv:
+                fhv.write(const_vars % (row.username, row.password))
+        const_hosts += "..."
 
     # hosts.yml 書き出し    
     with open('/home/ceansible/ce_dx_proj/auto-kitting/products/hosts.yml', 'w') as fh:
