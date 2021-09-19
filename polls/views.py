@@ -251,7 +251,8 @@ def PostExportCsv(request):
 
 
 def ListAnsibleLogs(request):
-    dirpath = "/home/ceansible/ansibledx/static/polls/ansible_playlogs/"
+    dirpath = "/home/ceansible/ce_dx_proj/ansibledx/static/polls/ansible_playlogs/"
+    wk_list = []
     wk_list = sorted(Path(dirpath).iterdir(), key=os.path.getmtime, reverse=True)
     log_list = list(map(lambda x: os.path.basename(x), wk_list))
     # task_result ファイルのみを表示する
