@@ -70,7 +70,7 @@ def OutputInventoryFile():
             # host_varsファイル出力
             with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.hostname, 'w') as fhv:
                 fhv.write(const_vars % (row.username, row.password))
-        const_hosts += "..."
+    const_hosts += "..."
 
     # hosts.yml 書き出し    
     with open('/home/ceansible/ce_dx_proj/auto-kitting/products/hosts.yml', 'w') as fh:
