@@ -46,7 +46,7 @@
                         clearInterval(timer);
                     }, 1000);
                     $('button').prop('disabled', false);
-                    alert(jqXHR.status + '：完了しました')
+                    alert(jqXHR.status + '：完了しました');
                 },
                 function (jqXHR, textStatus, errorThrown) {
                     /*失敗*/
@@ -54,7 +54,7 @@
                         clearInterval(timer);
                     }, 1000);
                     $('button').prop('disabled', false);
-                    alert('失敗：' + jqXHR.status + '：' + textStatus)
+                    alert('失敗：' + jqXHR.status + '：' + textStatus);
                 }
             );
         });
