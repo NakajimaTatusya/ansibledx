@@ -10,7 +10,7 @@
 
             $("#output_result").html('')
             $(this).prop("disabled", true);
-            $(this).html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>疎通確認中・・・`);
+            $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>疎通確認中・・・');
             var lastResLength = 0;
             var timer = null;
 
@@ -47,7 +47,7 @@
                         clearInterval(timer);
                     }, 1000);
                     $('button').prop('disabled', false);
-                    alert(jqXHR.status + '：完了しました')
+                    $('button').html('Play - 疎通確認');
                 },
                 function (jqXHR, textStatus, errorThrown) {
                     /*失敗*/
@@ -55,6 +55,7 @@
                         clearInterval(timer);
                     }, 1000);
                     $('button').prop('disabled', false);
+                    $('button').html('Play - 疎通確認');
                     alert('失敗：' + jqXHR.status + '：' + textStatus)
                 }
             );
@@ -79,7 +80,7 @@
     </div>
 </div>
 <div id="console" class="row bg-dark text-white h-100 m-0">
-    <div class="col" id="output_result" style="height:500px;border: 1px solid #0004ff;font: 16px/26px Georgia, Garamond, Serif;overflow: auto;">
+    <div class="col" id="output_result" style="height:100px;border: 1px solid #0004ff;font: 16px/26px Georgia, Garamond, Serif;overflow: auto;">
     </div>
 </div>
 {% endblock %}

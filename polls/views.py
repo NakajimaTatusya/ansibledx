@@ -6,14 +6,14 @@ import logging
 import re
 import urllib
 import socket
-import time
+
+from polls.playbook import AnsiblePlaybook
 
 from datetime import datetime
 from pathlib import Path
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse, response
-from django.http import StreamingHttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.template import loader
@@ -137,31 +137,15 @@ def ansible_powermng(request):
 
 
 def win_ping(request):
-    command_row = PlaybookStatus.objects.get(commandid=1)
-    with Popen(['bash', settings.SCRIPT_PARENT_PATH + command_row.command], \
-                cwd=settings.SCRIPT_CURRENT_DIR, \
-                stdin=DEVNULL, stdout=None, stderr=STDOUT, bufsize=0) as p:
-        command_row.processid = p.pid
-        command_row.starttiming = datetime.now()
-        command_row.playbookprogress = True
-    command_row.save()
-
+    ap = AnsiblePlaybook(1)
+    ap.start()
     return HttpResponse("win_ping start.")
-    # return StreamingHttpResponse(CommandPing())
 
 
 def win_powermng_zero(request):
-    command_row = PlaybookStatus.objects.get(commandid=2)
-    with Popen(['bash', settings.SCRIPT_PARENT_PATH + command_row.command], \
-                cwd=settings.SCRIPT_CURRENT_DIR, \
-                stdin=DEVNULL, stdout=None, stderr=STDOUT, bufsize=0) as p:
-        command_row.processid = p.pid
-        command_row.starttiming = datetime.now()
-        command_row.playbookprogress = True
-    command_row.save()
-
+    ap = AnsiblePlaybook(2)
+    ap.start()
     return HttpResponse("Starts the Windows power management zero setting.")
-    # return StreamingHttpResponse(CommandWinPowermngZero())
 
 
 def win_update(request):
