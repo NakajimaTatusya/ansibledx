@@ -2,14 +2,15 @@
 
 {% block content %}
 <script type="text/javascript">
-    $(function () {
+    $(document).ready(function () {
         $('#run').click(function () {
             if (!confirm("実行します。よろしいですか？")) {
                 return;
             }
 
             $("#output_result").html('')
-            $('button').prop('disabled', true);
+            $(this).prop("disabled", true);
+            $(this).html(`<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>疎通確認中・・・`);
             var lastResLength = 0;
             var timer = null;
 
@@ -73,7 +74,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <button id="run" type="button" class="btn btn-primary btn-lg btn-block">Play - 疎通確認</button>
+            <button id="run" class="btn btn-primary" type="button">Play - 疎通確認</button>
         </div>
     </div>
 </div>

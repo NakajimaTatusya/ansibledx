@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# print(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -135,7 +135,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static/"),
+]
 STATIC_URL = '/static/'
+
+# nginx settings
+# STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -162,5 +168,9 @@ else:
         filemode = 'a'
 )
 
-# nginx settings
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+# own settings
+SCRIPT_PARENT_PATH: str = "/home/ceansible/ce_dx_proj/auto-kitting/scripts/"
+SCRIPT_CURRENT_DIR: str = "/home/ceansible/ce_dx_proj/auto-kitting/"
+LOG_ANALYSIS_PATH: str = "/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/log_decomposition.py"
+LOG_ANALYSIS_CURRENT_DIR: str = "/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/"
+ANSIBLE_LOG_LIST_DIR: str = "/home/ceansible/ansibledx/static/polls/ansible_playlogs/"

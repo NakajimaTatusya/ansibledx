@@ -8,15 +8,17 @@ import urllib
 import socket
 import time
 
+from datetime import datetime
 from pathlib import Path
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
-from django.http import HttpResponseRedirect, HttpResponse
+from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponse, response
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.template import loader
 from django.views.generic import ListView
-from .models import Choice, Inventory, Question
+from .models import Choice, Inventory, PlaybookStatus, Question
 from .forms import InventoryCreateForm, InventoryCsvUpload
 from django.db.models import Max
 from polls.function import process_files, write_into_csv
@@ -135,11 +137,31 @@ def ansible_powermng(request):
 
 
 def win_ping(request):
-    return StreamingHttpResponse(CommandPing())
+    command_row = PlaybookStatus.objects.get(commandid=1)
+    with Popen(['bash', settings.SCRIPT_PARENT_PATH + command_row.command], \
+                cwd=settings.SCRIPT_CURRENT_DIR, \
+                stdin=DEVNULL, stdout=None, stderr=STDOUT, bufsize=0) as p:
+        command_row.processid = p.pid
+        command_row.starttiming = datetime.now()
+        command_row.playbookprogress = True
+    command_row.save()
+
+    return HttpResponse("win_ping start.")
+    # return StreamingHttpResponse(CommandPing())
 
 
 def win_powermng_zero(request):
-    return StreamingHttpResponse(CommandWinPowermngZero())
+    command_row = PlaybookStatus.objects.get(commandid=2)
+    with Popen(['bash', settings.SCRIPT_PARENT_PATH + command_row.command], \
+                cwd=settings.SCRIPT_CURRENT_DIR, \
+                stdin=DEVNULL, stdout=None, stderr=STDOUT, bufsize=0) as p:
+        command_row.processid = p.pid
+        command_row.starttiming = datetime.now()
+        command_row.playbookprogress = True
+    command_row.save()
+
+    return HttpResponse("Starts the Windows power management zero setting.")
+    # return StreamingHttpResponse(CommandWinPowermngZero())
 
 
 def win_update(request):
@@ -158,65 +180,51 @@ def ansibleplaybook_log_analysis(request):
     return StreamingHttpResponse(CommandAnsilePlayLogAnalysis())
 
 
-script_parent_path: str = '/home/ceansible/ce_dx_proj/auto-kitting/scripts/'
-script_current_dir: str = '/home/ceansible/ce_dx_proj/auto-kitting/'
-
-
 def CommandPing():
-    with Popen(['bash', script_parent_path + 'win_confirm.sh'], \
-                cwd=script_current_dir, \
+    with Popen(['bash', settings.SCRIPT_PARENT_PATH + 'win_confirm.sh'], \
+                cwd=settings.SCRIPT_CURRENT_DIR, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            time.sleep(0.1)
             yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinPowermngZero():
-    with Popen(['bash', script_parent_path + 'win_powermng_zero.sh'], \
-                cwd=script_current_dir, \
+    with Popen(['bash', settings.SCRIPT_PARENT_PATH + 'win_powermng_zero.sh'], \
+                cwd=settings.SCRIPT_CURRENT_DIR, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            time.sleep(0.1)
             yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinUpdate():
-    with Popen(['bash', script_parent_path + 'win_update.sh'], \
-                cwd=script_current_dir, \
+    with Popen(['bash', settings.SCRIPT_PARENT_PATH + 'win_update.sh'], \
+                cwd=settings.SCRIPT_CURRENT_DIR, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            time.sleep(0.1)
             yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinBasic():
-    with Popen(['bash', script_parent_path + 'win_basic.sh'], \
-                cwd=script_current_dir, \
+    with Popen(['bash', settings.SCRIPT_PARENT_PATH + 'win_basic.sh'], \
+                cwd=settings.SCRIPT_CURRENT_DIR, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            time.sleep(0.1)
             yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
 def CommandWinPowermng():
-    with Popen(['bash', script_parent_path + 'win_powermng.sh'], \
-                cwd=script_current_dir, \
+    with Popen(['bash', settings.SCRIPT_PARENT_PATH + 'win_powermng.sh'], \
+                cwd=settings.SCRIPT_CURRENT_DIR, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            time.sleep(0.1)
             yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
-log_analysis_path: str = '/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/log_decomposition.py'
-log_analysis_current_dir: str = '/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/'
-
-
 def CommandAnsilePlayLogAnalysis():
-    with Popen(['python3', log_analysis_path], \
-                cwd=log_analysis_current_dir, \
+    with Popen(['python3', settings.LOG_ANALYSIS_PATH], \
+                cwd=settings.LOG_ANALYSIS_CURRENT_DIR, \
                 stdin=DEVNULL, stdout=PIPE, stderr=STDOUT, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
-            time.sleep(0.1)
             yield "{0}<br>{1}\n".format(line, (" " * 1024))
 
 
@@ -260,9 +268,8 @@ def PostExportCsv(request):
 
 
 def ListAnsibleLogs(request):
-    dirpath = "/home/ceansible/ce_dx_proj/ansibledx/static/polls/ansible_playlogs/"
     wk_list = []
-    wk_list = sorted(Path(dirpath).iterdir(), key=os.path.getmtime, reverse=True)
+    wk_list = sorted(Path(settings.ANSIBLE_LOG_LIST_DIR).iterdir(), key=os.path.getmtime, reverse=True)
     log_list = list(map(lambda x: os.path.basename(x), wk_list))
     # task_result ファイルのみを表示する
     log_list = [x for x in log_list if re.match(r'task_result.*\.html', os.path.basename(x))]
