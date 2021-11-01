@@ -7,76 +7,19 @@ import re
 import urllib
 import socket
 
-from polls.playbook import AnsiblePlaybook
-
-from datetime import datetime
-from pathlib import Path
-from subprocess import Popen, PIPE, STDOUT, DEVNULL
+from .models import Choice, Inventory, Question
+from .forms import InventoryCreateForm, InventoryCsvUpload
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.template import loader
 from django.views.generic import ListView
-from .models import Choice, Inventory, PlaybookStatus, Question
-from .forms import InventoryCreateForm, InventoryCsvUpload
 from django.db.models import Max
-from polls.function import process_files, write_into_csv
-
-
-# disable:0 enable:1
-FLAG_NETBIOS = 1
-
-def ClearInventoryFiles():
-    """
-    ansible host vars 変数ファイルをすべて削除する
-    """
-    for filename in os.scandir('/home/ceansible/ce_dx_proj/auto-kitting/host_vars'):
-        if filename.name.endswith('.yml'):
-            os.unlink(filename)
-
-
-def OutputInventoryFile():
-    """
-    hosts ファイルを作成する
-    """
-    const_hosts = """---
-  all:
-    hosts:
-    vars:
-      ansible_connection: winrm
-      ansible_port: 5985
-      ansible_winrm_server_cert_validation: ignore
-    children:
-      win10_client_kitting:
-        hosts:
-"""
-
-    const_vars = """---
-  ansible_user: %s
-  ansible_password: %s
-...
-"""
-
-    rows = Inventory.objects.all()
-    for row in rows:
-        if FLAG_NETBIOS == 0:
-            # hosts.yml ファイル用
-            const_hosts += "          %s:\n" % row.ipaddress
-            # host_varsファイル出力
-            with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.ipaddress, 'w') as fhv:
-                fhv.write(const_vars % (row.username, row.password))
-        else:
-            # hosts.yml ファイル用
-            const_hosts += "          %s:\n" % row.hostname
-            # host_varsファイル出力
-            with open('/home/ceansible/ce_dx_proj/auto-kitting/host_vars/%s.yml' % row.hostname, 'w') as fhv:
-                fhv.write(const_vars % (row.username, row.password))
-    const_hosts += "..."
-
-    # hosts.yml 書き出し    
-    with open('/home/ceansible/ce_dx_proj/auto-kitting/products/hosts.yml', 'w') as fh:
-        fh.write(const_hosts)
+from polls.playbook import AnsiblePlaybook
+from polls.function import process_files, write_into_csv, generate_kitting_inventory, purge_host_variable_files, generate_host_variable_files
+from pathlib import Path
+from subprocess import Popen, PIPE, STDOUT, DEVNULL
 
 
 def index(request):
@@ -223,9 +166,10 @@ def InventoryUpload(request):
             target_list = request.FILES['target_list']
             csv_data = process_files(target_list)
             viewname = write_into_csv(csv_data)
-            # output ansible inventory file
-            ClearInventoryFiles()
-            OutputInventoryFile()
+            # host変数ファイルの削除と、Inventoryファイルの生成とhost変数ファイルの生成
+            purge_host_variable_files()
+            generate_kitting_inventory(p_flag_netbios=settings.FLAG_NETBIOS)
+            generate_host_variable_files(p_flag_netbios=settings.FLAG_NETBIOS)
             return redirect(viewname)
         else:
             return render(request, "polls/inventory_upload.html", {'form':upload})
@@ -300,9 +244,10 @@ class InventoryList(ListView):
             new_row = Inventory(hostname=form_inventory_value[0], ipaddress=_ipaddress, username=form_inventory_value[1], password=form_inventory_value[2], order_no=new_order_no)
             new_row.save()
 
-        # output ansible inventory file
-        ClearInventoryFiles()
-        OutputInventoryFile()
+        # host変数ファイルの削除と、Inventoryファイルの生成とhost変数ファイルの生成
+        purge_host_variable_files()
+        generate_kitting_inventory(p_flag_netbios=settings.FLAG_NETBIOS)
+        generate_host_variable_files(p_flag_netbios=settings.FLAG_NETBIOS)
 
         return self.get(request, *args, **kwargs)
 

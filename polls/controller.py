@@ -3,13 +3,13 @@ import os
 from .models import Inventory
 
 
-class ClearInventoryFiles():
+class ClearInventoryFiles:
   for filename in os.scandir('/home/ceansible/ce_dx_proj/auto-kitting/host_vars'):
     if filename.name.endswith('.yml'):
       os.unlink(filename)
 
 
-class OutputInventoryFile():
+class OutputInventoryFile:
     const_hosts = """---
   all:
     hosts:

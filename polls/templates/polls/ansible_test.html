@@ -11,12 +11,12 @@
             $("#output_result").html('')
             $(this).prop("disabled", true);
             $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>疎通確認中・・・');
-            var lastResLength = 0;
+            var async_url = $(this).val();
             var timer = null;
 
             var ajaxReq = $.ajax({
                 type: 'GET',
-                url: "{% url 'polls:win_ping' %}",
+                url: async_url,
                 data: '',
                 dataType: 'html',
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -75,7 +75,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <button id="run" class="btn btn-primary" type="button">Play - 疎通確認</button>
+            <button id="run" name="operation" value="{% url 'polls:win_ping' %}" class="btn btn-primary" type="button">Play - 疎通確認</button>
         </div>
     </div>
 </div>

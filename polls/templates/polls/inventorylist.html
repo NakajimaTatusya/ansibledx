@@ -81,7 +81,7 @@
             <td>{{ inventory.username }}</td>
             <td>{{ inventory.password }}</td>
             <td>
-                <button id="edit_button" type="button" class="btn btn-warning btn-sm" value="{{ forloop.counter }}">編集</button>
+                <button id="edit_button_{{ forloop.counter }}" name="editbutton" type="button" class="btn btn-warning btn-sm" value="{{ forloop.counter }}">編集</button>
                 <input type="hidden" id="hostname_{{ forloop.counter }}" name="hostname_{{ forloop.counter }}" value="{{ inventory.hostname }}" />
                 <input type="hidden" id="username_{{ forloop.counter }}" name="username_{{ forloop.counter }}" value="{{ inventory.username }}" />
                 <input type="hidden" id="password_{{ forloop.counter }}" name="password_{{ forloop.counter }}" value="{{ inventory.password }}" />
@@ -97,8 +97,9 @@
         $('#id_user_name').attr('value', '');
         $('#id_pass_word').attr('value', '');
     });
-    $("#edit_button").on("click", function() {
+    $('.btn').on("click", function() {
         var indexNo = $(this).val();
+        if (!jQuery.isNumeric(indexNo)) return;
         var hostname = $('#hostname_' + indexNo).val();
         var username = $('#username_' + indexNo).val();
         var password = $('#password_' + indexNo).val();

@@ -135,12 +135,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATIC_DIR = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static/"),
+    STATIC_DIR,
 ]
+
 STATIC_URL = '/static/'
 
-# nginx settings
+# for collectstatic
 # STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # Default primary key field type
@@ -174,3 +176,6 @@ SCRIPT_CURRENT_DIR: str = "/home/ceansible/ce_dx_proj/auto-kitting/"
 LOG_ANALYSIS_PATH: str = "/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/log_decomposition.py"
 LOG_ANALYSIS_CURRENT_DIR: str = "/home/ceansible/ce_dx_proj/auto-kitting/ansible_log_analysis/"
 ANSIBLE_LOG_LIST_DIR: str = "/home/ceansible/ansibledx/static/polls/ansible_playlogs/"
+ANSIBLE_HOSTS_FILE_PATH = "/home/ceansible/ce_dx_proj/auto-kitting/products/hosts.yml"
+ANSIBLE_HOST_VARS_FILE_DIR = "/home/ceansible/ce_dx_proj/auto-kitting/host_vars"
+FLAG_NETBIOS = 1 # disable:0 enable:1

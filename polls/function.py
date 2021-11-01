@@ -1,8 +1,12 @@
 import concurrent.futures
 import logging
+import os
 import socket
+import yaml
 
+from django.conf import settings
 from .models import Inventory
+
 
 def process_files(inventoryfile):
     """
@@ -67,3 +71,97 @@ def write_into_csv(csv_data):
     #         logging.exception("get host by %s error." % row['hostname'])
 
     return 'polls:InventoryList'
+
+
+def load_yaml_file(filename: str) -> dict:
+    with open(filename, "r") as yf:
+        data = yaml.load(yf, Loader=yaml.SafeLoader)
+    return data
+
+
+def write_yaml_file(filename: str, data: dict) -> None:
+    with open(filename, "w") as yf:
+        yaml.dump(data, yf, default_flow_style=False)
+
+
+def generate_individual_inventory(p_data: list, p_cmd_key_name="maintenance_command", p_flag_netbios=1) -> None:
+    """
+    メンテナンスコマンドを発行するためのInventoryキーワードを追加する
+    args[0]:
+    [
+        {
+            "hostname": hostname,
+            "ipaddress": ipaddress
+        },
+        ...
+    ]
+    return value: None
+    """
+    inventory_data: dict = load_yaml_file(settings.ANSIBLE_HOSTS_FILE_PATH)
+    # remove host from maintenance_command:hosts key.
+    dict_hosts: dict = inventory_data["all"]["children"][p_cmd_key_name]["hosts"]
+    for delkey in list(dict_hosts.keys()):
+        removed_value = dict_hosts.pop(delkey)
+    # add new host
+    new_host: dict = {}
+    for el in p_data:
+        if p_flag_netbios == 1:
+            new_host.update({el["hostname"]: None})
+        else:
+            new_host.update({el["ipaddress"]: None})
+    inventory_data["all"]["children"][p_cmd_key_name]["hosts"] = new_host
+    # write inventory file.
+    write_yaml_file(settings.ANSIBLE_HOSTS_FILE_PATH, inventory_data)
+
+
+def generate_kitting_inventory(p_kitting_key_name="win10_client_kitting", p_flag_netbios=1) -> None:
+    """
+    Inventoryテーブルからキッティング用ターゲット端末のInventoryファイルを作成する
+    """
+    inventory_data: dict = load_yaml_file(settings.ANSIBLE_HOSTS_FILE_PATH)
+    # remove host from maintenance_command:hosts key.
+    dict_hosts: dict = inventory_data["all"]["children"][p_kitting_key_name]["hosts"]
+    for delkey in list(dict_hosts.keys()):
+        removed_value = dict_hosts.pop(delkey)
+    # add new host
+    inventory_rows = Inventory.objects.all()
+    new_host: dict = {}
+    for row in inventory_rows:
+        if p_flag_netbios == 1:
+            new_host.update({row.hostname: None})
+        else:
+            new_host.update({row.ipaddress: None})
+    inventory_data["all"]["children"][p_kitting_key_name]["hosts"] = new_host
+    # write inventory file.
+    write_yaml_file(settings.ANSIBLE_HOSTS_FILE_PATH, inventory_data)
+
+
+def purge_host_variable_files() -> None:
+    """
+    ansible host 変数ファイルをすべて削除する
+    """
+    for filename in os.scandir(settings.ANSIBLE_HOST_VARS_FILE_DIR):
+        if filename.name.endswith('.yml'):
+            os.unlink(filename)
+
+
+def generate_host_variable_files(p_flag_netbios=1) -> None:
+    """
+    host 変数ファイルを作成する
+    """
+    const_vars = """---
+  ansible_user: %s
+  ansible_password: %s
+...
+"""
+
+    rows = Inventory.objects.all()
+    for row in rows:
+        if p_flag_netbios == 0:
+            # host値にipaddressを使用したhost変数ファイルの出力
+            with open(f'{settings.ANSIBLE_HOST_VARS_FILE_DIR}/{row.ipaddress}.yml', 'w') as fhv:
+                fhv.write(const_vars % (row.username, row.password))
+        else:
+            # host値にhostnameを使用したhost変数ファイルの出力
+            with open(f'{settings.ANSIBLE_HOST_VARS_FILE_DIR}/{row.hostname}.yml', 'w') as fhv:
+                fhv.write(const_vars % (row.username, row.password))

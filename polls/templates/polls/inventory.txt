@@ -1,0 +1,13 @@
+---
+  all:
+    hosts:
+    vars:
+      ansible_connection: winrm
+      ansible_port: 5985
+      ansible_winrm_server_cert_validation: ignore
+    children:
+      win10_client_kitting:
+        hosts:
+            {% for item in rows %}{{ item.hostname }}:
+            {% endfor %}
+...
