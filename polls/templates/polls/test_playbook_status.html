@@ -1,0 +1,65 @@
+{% extends 'polls/base.html' %}
+
+{% block content %}
+<script type="text/javascript">
+    // $(function () {
+    //     $('#addcmd').click(function() {
+    //         var cmd = $("#cmdstr").val();
+    //         console.log(cmd);
+    //         $.GET("{% url 'polls:add_command' %}/" + cmd, function(data) {
+    //             $("#output_result").html(data);
+    //         });
+    //     });
+    // });
+</script>
+
+<!-- Start Breadcrumb -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb" id="breadcrumblist">
+        <li class="breadcrumb-item"><a title="to HomePage" href="{% url 'polls:index' %}"><i class="fa fa-home">HOME</i></a></li>
+        <li class="breadcrumb-item active" aria-current="page">TEST Playbook Status</li>
+    </ol>
+</nav>
+<!-- End Breadcrumb -->
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">commandid</th>
+            <th scope="col">command</th>
+            <th scope="col">processid</th>
+            <th scope="col">starttiming</th>
+            <th scope="col">endtiming</th>
+            <th scope="col">playbookprogress</th>
+            <th scope="col">playbookstatus</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in playlist %}
+        <tr>
+            <th scope="row">{{ item.commandid }}</th>
+            <td>{{ item.command }}</td>
+            <td>{{ item.processid }}</td>
+            <td>{{ item.starttiming }}</td>
+            <td>{{ item.endtiming }}</td>
+            <td>{{ item.playbookprogress }}</td>
+            <td>{{ item.playbookstatus }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <input type="text" name="commandstring" id="cmdstr" value="test">
+            <button id="addcmd" type="button" class="btn btn-primary btn-lg btn-block">add command</button>
+        </div>
+    </div>
+</div>
+<div id="console" class="row bg-dark text-white h-100 m-0">
+    <div class="col" id="output_result"
+    style="height:500px;border: 1px solid #0004ff;font: 16px/26px Georgia, Garamond, Serif;overflow: auto;">
+    </div>
+</div>
+{% endblock %}

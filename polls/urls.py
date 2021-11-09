@@ -24,6 +24,10 @@ urlpatterns = [
     # path('ansible/init_inventory/', views.InitInventory, name='init_inventory'),
     path('ansible/playbookresult', views.ListAnsibleLogs, name="ListAnsibleLogs"),
     path('ansible/playbookloganalysis/', views.ansibleplaybook_log_analysis, name='ansibleplaybook_log_analysis'),
+    # 実行ステータス関係
+    path('ansible/playbookstatus', views.test_playbook_status, name='playbook_status'),
+    path('ansible/addcmd/<str:commandstring>', views.test_add_task, name='add_command'),
+    path('ansible/getstatus/<int:cmdid>', views.test_get_play_status, name='get_status'),
 
     # 例: /polls/5/
     path('<int:question_id>/', views.detail, name='detail'),

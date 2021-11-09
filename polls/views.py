@@ -7,7 +7,11 @@ import re
 import urllib
 import socket
 
-from .models import Choice, Inventory, Question
+from django import http
+from django.http import response
+from django.http.response import JsonResponse
+
+from .models import Choice, Inventory, PlaybookStatus, Question
 from .forms import InventoryCreateForm, InventoryCsvUpload
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse, StreamingHttpResponse
@@ -16,7 +20,7 @@ from django.urls import reverse
 from django.template import loader
 from django.views.generic import ListView
 from django.db.models import Max
-from polls.playbook import AnsiblePlaybook
+from polls.playbook import AnsiblePlaybook, PlaybookTaskManagement
 from polls.function import process_files, write_into_csv, generate_kitting_inventory, purge_host_variable_files, generate_host_variable_files
 from pathlib import Path
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
@@ -105,6 +109,34 @@ def win_powermng(request):
 
 def ansibleplaybook_log_analysis(request):
     return StreamingHttpResponse(CommandAnsilePlayLogAnalysis())
+
+
+def test_playbook_status(request):
+    lstPlaybooks = list(PlaybookStatus.objects.all())
+    context = {
+        'playlist': lstPlaybooks
+    }
+    return render(request, 'polls/test_playbook_status.html', context)
+
+
+def test_add_task(request, commandstring) -> JsonResponse:
+    """
+    DBにタスクを登録する
+    """
+    if request.method == 'GET':
+        ptm = PlaybookTaskManagement()
+        pkey = ptm.add_task(commandstring)
+        return JsonResponse({"pkey": pkey})
+
+
+def test_get_play_status(request, cmdid) -> JsonResponse:
+    """
+    Playbook の実行ステータスを取得する
+    """
+    if request.method == 'GET':
+        ptm = PlaybookTaskManagement()
+        stus: dict = ptm.get_playbook_status(cmdid)
+        return JsonResponse(stus)
 
 
 def CommandPing():

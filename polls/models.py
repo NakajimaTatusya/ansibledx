@@ -42,18 +42,19 @@ class Inventory(models.Model):
 class PlaybookStatus(models.Model):
     # 状態管理
     class PlaybookStatus(models.Choices):
-        SUCCEED = 0
-        FAILED = 1
-        CANCEL = 2
+        NOT_PLAY_YET = 0
+        SUCCEED = 1
+        FAILED = 2
+        CANCEL = 3
 
     # command id
     commandid = models.AutoField(primary_key=True, null=False, name="commandid")
     # command
     command = models.CharField(max_length=1024, null=False, name="command")
     # process id
-    processid = models.IntegerField(name="processid")
+    processid = models.IntegerField(null=True, name="processid")
     # 開始日時
-    satarttiming = models.DateTimeField(null=True, name="starttiming")
+    starttiming = models.DateTimeField(null=True, name="starttiming")
     # 終了日時
     endtiming = models.DateTimeField(null=True, name="endtiming")
     # 進捗(停止：False、処理中：True)

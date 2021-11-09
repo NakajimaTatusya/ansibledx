@@ -1,3 +1,4 @@
+from logging import exception
 import os
 import signal
 import threading
@@ -84,3 +85,53 @@ class AnsiblePlaybook(threading.Thread):
             command_row.save()
         except Exception as ex:
             raise ex
+
+
+class PlaybookTaskManagement():
+    def __init__(self) -> None:
+        pass
+
+
+    def add_task(self, cmd: str) -> int:
+        """
+        AnsiblePlaybook task を登録
+        """
+        ret_val = -1
+        try:
+            pb = PlaybookStatus(command=cmd, processid=None, \
+                                satarttiming=None, endtiming=None, playbookprogress=False, \
+                                playbookstatus=PlaybookStatus.PlaybookStatus.NOT_PLAY_YET._value_)
+            pb.save()
+            ret_val = pb.commandid
+        except Exception as ex:
+            raise ex
+
+        return ret_val
+
+    def add_tasks(self, cmds: list) -> None:
+        """
+        複数のタスクを登録
+        """
+        try:
+            for cmd in cmds:
+                self.add_task(cmd=cmd)
+        except Exception as ex:
+            raise ex
+
+
+    def get_playbook_status(self, cmdid: int) -> dict:
+        """
+        Playbook 実行タスクの現在のステータスを取得
+        """
+        ret_status: dict = None
+        try:
+            pb = PlaybookStatus.objects.get(commandid=cmdid)
+            # other way
+            # temp: list = list(pb.objects.values())
+            # temp: list = list(pb.objects.values('playbookprogress', 'playbookstatus'))
+            # ret_status = {'playbookprogress': temp[0]['playbookprogress'], 'playbookstatus': temp[0]['playbookstatus']}
+            ret_status = {'playbookprogress': pb.playbookprogress, 'playbookstatus': pb.playbookstatus}
+        except Exception as ex:
+            raise exception
+
+        return ret_status
